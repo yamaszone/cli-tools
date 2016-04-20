@@ -6,12 +6,16 @@
 DISK_SIZE=51200 # 50 GB by default
 
 if [[ -z $VB_MANAGE_EXE_FILE_PATH ]]; then
-	echo "Error: VB_MANAGE_EXE_FILE_PATH environment variable is not set. Run: export VB_MANAGE_EXE_FILE_PATH='<absolute path/to/vboxmanage/executable>' and retry. e.g. for Windows OS: export VB_MANAGE_EXE_FILE_PATH='/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe'"
+	printf "Error: VB_MANAGE_EXE_FILE_PATH environment variable is not set.\n"
+	printf "Run: export VB_MANAGE_EXE_FILE_PATH='<absolute path/to/vboxmanage/executable>' and retry.\n"
+	printf "e.g. for Windows OS: export VB_MANAGE_EXE_FILE_PATH='/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe'\n"
 	exit 1
 fi
 
 if [[ -z $COREOS_VMDK_FILE_PATH ]]; then
-	echo "Error: COREOS_VMDK_FILE_PATH environment variable is not set. Run: export COREOS_VMDK_FILE_PATH='<absolute path/to/coreos_production_vagrant_image.vmdk>' and retry. e.g. for Windows OS, VMDK file is located under /c/Users/<username>/.vagrant.d/boxes/coreos-<channel e.g.stable>/<image_version e.g.835.13.0>/virtualbox/"
+	printf "Error: COREOS_VMDK_FILE_PATH environment variable is not set.\n"
+	printf "Run: export COREOS_VMDK_FILE_PATH='<absolute path/to/coreos_production_vagrant_image.vmdk>' and retry.\n"
+	printf "e.g. for Windows OS, VMDK file is located under /c/Users/<username>/.vagrant.d/boxes/coreos-<channel e.g.stable>/<image_version e.g.835.13.0>/virtualbox/\n"
 	exit 1
 fi
 
