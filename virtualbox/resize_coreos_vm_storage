@@ -1,32 +1,50 @@
 #!/bin/bash
 
 # CoreOS VM for Vagrant comes with default ~16GB disk size and resizing the disk can be very painful.
-# This script takes care of some of the pain to resize the disk.
+# This script takes care of some of the pain to resize the disk and prevents accidental mess.
 
-DISK_SIZE=51200 # 50 GB by default
+DISK_SIZE=51200 # 50GB by default
 
-if [[ -z $VB_MANAGE_EXE_FILE_PATH ]]; then
-	printf "Error: VB_MANAGE_EXE_FILE_PATH environment variable is not set.\n"
-	printf "Run: export VB_MANAGE_EXE_FILE_PATH='<absolute path/to/vboxmanage/executable>' and retry.\n"
-	printf "e.g. for Windows OS: export VB_MANAGE_EXE_FILE_PATH='/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe'\n"
-	exit 1
-fi
+confirm(){
+	read -p "Are you sure (y/n)? " -n 1 -r
+	echo    # Move to a new line
+	if [[ $REPLY =~ ^[Yy]$ ]]
+	then
+		resize
+	fi
+}
 
-if [[ -z $COREOS_VMDK_FILE_PATH ]]; then
-	printf "Error: COREOS_VMDK_FILE_PATH environment variable is not set.\n"
-	printf "Run: export COREOS_VMDK_FILE_PATH='<absolute path/to/coreos_production_vagrant_image.vmdk>' and retry.\n"
-	printf "e.g. for Windows OS, VMDK file is located under /c/Users/<username>/.vagrant.d/boxes/coreos-<channel e.g.stable>/<image_version e.g.835.13.0>/virtualbox/\n"
-	exit 1
-fi
+prerequisite(){
+    printf "Prerequisites:\n"
+    printf "\t 1. Must backup existing vmdk file in case anything goes wrong.\n"
+    printf "\t 2. Both VB_MANAGE_EXE_FILE_PATH and COREOS_VMDK_FILE_PATH environment must be set.\n"
+    printf "\t 3. [Optional] Specify expected disk size in MBs. Default disk size is 51200MB i.e. 50GB.\n"
+    printf "Set ENV variables:\n"
+    printf "\t export VB_MANAGE_EXE_FILE_PATH='<absolute path/to/vboxmanage/executable>'\n"
+    printf "\t export COREOS_VMDK_FILE_PATH='<absolute path/to/coreos_production_vagrant_image.vmdk>'\n"
+    printf "Windows OS examples:\n"
+    printf "\t export VB_MANAGE_EXE_FILE_PATH='/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe'\n"
+    printf "\t VMDK file is located under /c/Users/<username>/.vagrant.d/boxes/coreos-<channel e.g.stable>/<image_version e.g.835.13.0>/virtualbox/\n"
+}
 
-if [[ ! -z "$1" ]]; then
-	DISK_SIZE=$1
-fi
+check_prerequisite(){
+    if [[ -z $VB_MANAGE_EXE_FILE_PATH || -z $COREOS_VMDK_FILE_PATH ]]; then
+        prerequisite
+        exit 1
+    fi
+}
 
-# @See: https://github.com/mitchellh/vagrant/issues/2339#issuecomment-112402297
+resize(){
+    # @See: https://github.com/mitchellh/vagrant/issues/2339#issuecomment-112402297
 
-/bin/bash -c "$VB_MANAGE_EXE_FILE_PATH clonehd $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk $COREOS_VMDK_FILE_PATH/temp.vdi --format vdii"
-/bin/bash -c "$VB_MANAGE_EXE_FILE_PATH modifyhd $COREOS_VMDK_FILE_PATH/temp.vdi --resize $DISK_SIZE"
-/bin/bash -c "$VB_MANAGE_EXE_FILE_PATH clonehd $COREOS_VMDK_FILE_PATH/temp.vdi $COREOS_VMDK_FILE_PATH/resized-disk.vmdk --format vmdk"
-/bin/bash -c "rm $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk $COREOS_VMDK_FILE_PATH/temp.vdi"
-/bin/bash -c "mv $COREOS_VMDK_FILE_PATH/resized-disk.vmdk $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk"
+    printf "Resizing...\n"
+    /bin/bash -c "$VB_MANAGE_EXE_FILE_PATH clonehd $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk $COREOS_VMDK_FILE_PATH/temp.vdi --format vdii"
+    /bin/bash -c "$VB_MANAGE_EXE_FILE_PATH modifyhd $COREOS_VMDK_FILE_PATH/temp.vdi --resize $DISK_SIZE"
+    /bin/bash -c "$VB_MANAGE_EXE_FILE_PATH clonehd $COREOS_VMDK_FILE_PATH/temp.vdi $COREOS_VMDK_FILE_PATH/resized-disk.vmdk --format vmdk"
+    /bin/bash -c "rm $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk $COREOS_VMDK_FILE_PATH/temp.vdi"
+    /bin/bash -c "mv $COREOS_VMDK_FILE_PATH/resized-disk.vmdk $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk"
+}
+
+check_prerequisite
+confirm
+resize
