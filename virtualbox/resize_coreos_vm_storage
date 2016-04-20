@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# CoreOS VM for Vagrant comes with default ~16GB disk size and resizing the disk can be very painful.
+# This script takes care of some of the pain to resize the disk.
+
+DISK_SIZE=51200 # 50 GB by default
+
+if [[ -z $VB_MANAGE_EXE_FILE_PATH ]]; then
+	echo "Error: VB_MANAGE_EXE_FILE_PATH environment variable is not set. Run: export VB_MANAGE_EXE_FILE_PATH='<absolute path/to/vboxmanage/executable>' and retry. e.g. for Windows OS: export VB_MANAGE_EXE_FILE_PATH='/c/Program\ Files/Oracle/VirtualBox/VBoxManage.exe'"
+	exit 1
+fi
+
+if [[ -z $COREOS_VMDK_FILE_PATH ]]; then
+	echo "Error: COREOS_VMDK_FILE_PATH environment variable is not set. Run: export COREOS_VMDK_FILE_PATH='<absolute path/to/coreos_production_vagrant_image.vmdk>' and retry. e.g. for Windows OS, VMDK file is located under /c/Users/<username>/.vagrant.d/boxes/coreos-<channel e.g.stable>/<image_version e.g.835.13.0>/virtualbox/"
+	exit 1
+fi
+
+if [[ ! -z "$1" ]]; then
+	DISK_SIZE=$1
+fi
+
+# @See: https://github.com/mitchellh/vagrant/issues/2339#issuecomment-112402297
+
+/bin/bash -c "$VB_MANAGE_EXE_FILE_PATH clonehd $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk $COREOS_VMDK_FILE_PATH/temp.vdi --format vdii"
+/bin/bash -c "$VB_MANAGE_EXE_FILE_PATH modifyhd $COREOS_VMDK_FILE_PATH/temp.vdi --resize $DISK_SIZE"
+/bin/bash -c "$VB_MANAGE_EXE_FILE_PATH clonehd $COREOS_VMDK_FILE_PATH/temp.vdi $COREOS_VMDK_FILE_PATH/resized-disk.vmdk --format vmdk"
+/bin/bash -c "rm $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk $COREOS_VMDK_FILE_PATH/temp.vdi"
+/bin/bash -c "mv $COREOS_VMDK_FILE_PATH/resized-disk.vmdk $COREOS_VMDK_FILE_PATH/coreos_production_vagrant_image.vmdk"
