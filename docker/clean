@@ -8,7 +8,7 @@ remove_containers(){
 	fi
 
 	if [[ ! -z $CONT_IDS ]]; then
-		echo "The following contains will be removed:"
+		echo "The following containers will be removed:"
 		echo $CONT_IDS
 	else
 		echo "No containers found."
