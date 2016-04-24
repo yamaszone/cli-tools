@@ -13,9 +13,9 @@ load test_helper
 }
 
 @test "'clean ca' returns appropriate message when no exited containers." {
-	sudo docker run busybox
-	sudo docker rm -f $(docker ps -aq)
-	run sudo ~/cli-tools/docker/clean ca
+	docker run busybox
+	docker rm -f $(docker ps -aq)
+	run ~/cli-tools/docker/clean ca
 	assert_contains "$output" "No containers found."
 }
 
