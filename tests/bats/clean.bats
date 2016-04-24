@@ -13,6 +13,7 @@ load test_helper
 }
 
 @test "'clean ca' returns appropriate message when no exited containers." {
+	docker pull busybox
 	docker run busybox
 	docker rm -f $(docker ps -aq)
 	run ~/cli-tools/docker/clean ca
