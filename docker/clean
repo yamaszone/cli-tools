@@ -1,12 +1,16 @@
 #!/bin/bash
 
-remove_containers(){
-	if [[ "$1" == *"ALL"* ]]; then
-		CONT_IDS=$(docker ps -qa)
-	elif [[ $1 == *"EXITED"* ]]; then
-		CONT_IDS=$(docker ps -q -f "status=exited")
+confirm(){
+	read -p "DESTRUCTIVE! Are you sure (y/n)? " -n 1 -r
+	echo  # Move to a new line
+	if [[ $REPLY =~ ^[Nn]$ ]]
+	then
+		exit
 	fi
+}
 
+check_container_list(){
+	CONT_IDS=$1
 	if [[ ! -z $CONT_IDS ]]; then
 		echo "The following containers will be removed:"
 		echo $CONT_IDS
@@ -14,25 +18,37 @@ remove_containers(){
 		echo "No containers found."
 		exit 1
 	fi
+}
 
-	read -p "Are you sure (y/n)? " -n 1 -r
-	echo    # Move to a new line
-	if [[ $REPLY =~ ^[Yy]$ ]]
-	then
-		docker rm -f $CONT_IDS
-	fi	
+list_all_containers(){
+	CONT_IDS=$(docker ps -aq)
+	check_container_list "$CONT_IDS"
+}
+
+list_exited_containers(){
+	CONT_IDS=$(docker ps -q -f "status=exited")
+	check_container_list "$CONT_IDS"
+}
+
+remove_all_containers(){
+	docker rm -f $(docker ps -aq)
+}
+
+remove_exited_containers(){
+	docker rm -f $(docker ps -q -f "status=exited")
 }
 
 remove_untagged_images(){
-	docker images -a | grep "^<none>" | awk '{print $3}' | xargs docker rmi -f > /dev/null 2>&1
+	docker images -a | grep "^<none>" | awk '{print $3}' | xargs docker rmi -f
 }
 
 help(){
 	echo "Usage: clean"
-	printf "\t h, help\t\t: Show this help.\n"
 	printf "\t ca, containers-all\t: Remove all containers.\n"
 	printf "\t ce, containers-exited\t: Remove exited containers.\n"
+	printf "\t fr, force-remove\t: Force remove exited containers.\n"
 	printf "\t images\t\t\t: Remove untagged images.\n"
+	printf "\t h, help\t\t: Show this help.\n"
 	exit 0
 }
 
@@ -43,10 +59,17 @@ fi
 
 case $1 in
 	ca | containers-all)
-		remove_containers "ALL"
+		list_all_containers
+		confirm
+		remove_all_containers
 		;;
 	ce | containers-exited)
-		remove_containers "EXITED"
+		list_exited_containers
+		confirm
+		remove_exited_containers
+        ;;
+	fr | force-remove)
+		remove_exited_containers
 		;;
 	images)
 		remove_untagged_images
