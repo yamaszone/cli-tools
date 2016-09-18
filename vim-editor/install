@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [[ ! -d "/workspace" ]]; then
+	sudo mkdir -p /workspace
+	sudo chown -R 500:core /workspace
+fi
+
+docker run -it --rm \
+	-v /workspace:/workspace \
+	--workdir=/workspace \
+	yamaszone/vim-editor:v0.1.0 \
+	/bin/bash
+

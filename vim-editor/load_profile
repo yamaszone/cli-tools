@@ -1,0 +1,3 @@
+#!/bin/bash
+
+source /home/$DEF_USER/.bash_profile

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+build(){
+	docker build \
+		--build-arg DEF_GROUP=core \
+		--build-arg DEF_GROUP_ID=500 \
+		--build-arg DEF_USER=core \
+		--build-arg DEF_USER_ID=500 \
+		-t yamaszone/vim-editor:v0.1.0 -f Dockerfile .
+}
+
+install(){
+	sudo /bin/cp install /opt/bin/editor
+}
+
+help(){
+	echo "Usage: clean"
+	printf "\t build\t\t: Build image for editor.\n"
+	printf "\t install\t: Install Vim editor and run 'editor' to launch it from terminal.\n"
+	printf "\t tests\t\t: Run tests to verify correct dependencies are installed.\n"
+	printf "\t h, help\t: Show this help.\n"
+	exit 0
+}
+
+if [[ -z $1 ]];then
+	help
+	exit 0
+fi
+
+case $1 in
+	build)
+		build
+		;;
+	install)
+		install
+		;;
+	tests)
+		docker rm -f test_editor > /dev/null 2>&1
+		docker run --name=test_editor yamaszone/vim-editor:v0.1.0 /bin/bash -c "while true; do ping 8.8.8.8; done" &
+		~/cli-tools/vendor/bats/bin/bats ~/cli-tools/tests/bats/vim-editor.bats
+		docker rm -f test_editor
+		;;
+	* | h | help)
+		help
+		;;
+esac
