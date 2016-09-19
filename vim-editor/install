@@ -8,6 +8,6 @@ fi
 docker run -it --rm \
 	-v /workspace:/workspace \
 	--workdir=/workspace \
-	yamaszone/vim-editor:v0.1.0 \
+	yamaszone/vim-editor:EDITOR_VERSION \
 	/bin/bash
 
