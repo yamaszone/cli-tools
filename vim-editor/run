@@ -24,7 +24,7 @@ build(){
 
 install(){
 	if [[ ${EDITOR_VERSION} == 'latest' ]]; then
-		printf "EDITOR_VERSION='latest'. Available versions: latest, v0.2.0. Run 'export EDITOR_VERSION=<version>' to override.\n"
+		printf "EDITOR_VERSION='latest'. Available versions: latest, v0.3.0. Run 'export EDITOR_VERSION=<version>' to override.\n"
 		confirm
 	fi
 
