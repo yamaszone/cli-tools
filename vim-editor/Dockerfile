@@ -23,6 +23,17 @@ RUN mkdir -p /home/$DEF_USER/.vim/ \
 	&& cp -r /tmp/monokai/* /home/$DEF_USER/.vim/ \
 	&& rm -rf /tmp/monokai
 
+# Set the locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
 COPY screenrc /home/$DEF_USER/.screenrc
+COPY vimrc /home/$DEF_USER/.vimrc
 
 USER $DEF_USER
