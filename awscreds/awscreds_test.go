@@ -30,12 +30,6 @@ func TestParseCredentials(t *testing.T) {
 			t.Errorf("Actual: %s, Expected: %s.", fieldValue, testcase.value)
 		}
 	}
-
-	credentialsFile2 := "./fixtures/credentials2"
-	assert.Panics(t, func() { ParseCredentials(credentialsFile2, "default", "key") })
-
-	credentialsFile3 := "./fixtures/credentials3"
-	assert.Panics(t, func() { ParseCredentials(credentialsFile3, "default", "key") })
 }
 
 func TestParseCredentialsWithBadFile(t *testing.T) {
