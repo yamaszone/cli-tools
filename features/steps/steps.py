@@ -1,20 +1,9 @@
 from behave import *
-import subprocess
 import pexpect
 
-import unittest
-
-@given(u'a Ubuntu development machine')
+@given(u'CLI jokes tool is installed')
 def step_impl(context):
-    pass
-
-@given(u'nose is installed')
-def step_impl(context):
-    pass
-
-@given(u'coverage is installed')
-def step_impl(context):
-    pass
+    execute('./joke/install')
 
 @when(u'I execute "{cmd}"')
 def step_impl(context, cmd):
@@ -32,3 +21,16 @@ def execute(cmd):
                                 )
 
     return output
+
+@given(u'a Ubuntu development machine')
+def step_impl(context):
+    pass
+
+@given(u'nose is installed')
+def step_impl(context):
+    pass
+
+@given(u'coverage is installed')
+def step_impl(context):
+    pass
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sudo cp ./joke/joke /usr/local/bin/joke
+sudo chmod +x /usr/local/bin/joke

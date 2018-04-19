@@ -5,5 +5,5 @@ I should be able to read jokes from terminal
 Scenario: Jokes can be read from CLI
 	Given CLI jokes tool is installed
 	When I execute "joke"
-	Then I should see "setup"
-	And I should see "punchline"
+	Then I should see "Setup"
+	And I should see "Punchline"
