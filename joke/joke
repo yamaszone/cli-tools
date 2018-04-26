@@ -1,0 +1,19 @@
+#!/bin/bash
+
+API_URL="https://08ad1pao69.execute-api.us-east-
+1.amazonaws.com/dev/random_joke"
+
+# Save jokes data
+OUTPUT="/tmp/random_joke.txt"
+curl -sS "$API_URL" > "$OUTPUT"
+
+# Parse setup and punchline
+SETUP=`cat $OUTPUT | jq '.setup'`
+PUNCH=`cat $OUTPUT | jq '.punchline'`
+
+# Display setup and punchline
+printf "Setup:     $SETUP \n"
+printf "Punchline: $PUNCH \n"
+
+# Clean up temporary file
+rm "$OUTPUT"
