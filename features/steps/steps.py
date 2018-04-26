@@ -4,6 +4,7 @@ import pexpect
 @given(u'CLI jokes tool is installed')
 def step_impl(context):
     execute('./joke/install')
+    #execute('./joke/py_install')
 
 @when(u'I execute "{cmd}"')
 def step_impl(context, cmd):
