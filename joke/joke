@@ -1,7 +1,6 @@
 #!/bin/bash
 
-API_URL="https://08ad1pao69.execute-api.us-east-
-1.amazonaws.com/dev/random_joke"
+API_URL="https://08ad1pao69.execute-api.us-east-1.amazonaws.com/dev/random_joke"
 
 # Save jokes data
 OUTPUT="/tmp/random_joke.txt"
