@@ -10,14 +10,13 @@ import (
 )
 
 type Joke struct {
-	Id        int    `json:"id"`
-	Type      string `json:"type"`
-	Setup     string `json:"setup"`
-	Punchline string `json:"punchline"`
+	//Id      string `json:"id"`
+	Joke     string `json:"joke"`
+	//Status string `json:"status"`
 }
 
 func main() {
-	url := "https://08ad1pao69.execute-api.us-east-1.amazonaws.com/dev/random_joke"
+	url := "https://icanhazdadjoke.com"
 	/*
 	   response, err := http.Get(API_URL)
 	   response := `{"id":3, "type": "general", "setup": "New setup", "punchline": "New punchline"}`
@@ -36,8 +35,8 @@ func main() {
 		fmt.Println(jsonErr)
 		return
 	}
-	fmt.Println("Setup:\t\t", joke.Setup)
-	fmt.Println("Punchline:\t", joke.Punchline)
+	fmt.Println("Joke:\t\t", joke.Joke)
+	//fmt.Println("Punchline:\t", joke.Punchline)
 }
 
 func GetJoke(url string) *http.Response {
@@ -50,6 +49,7 @@ func GetJoke(url string) *http.Response {
 		log.Fatal(err)
 	}
 	request.Header.Set("User-Agent", "jokes-cli")
+	request.Header.Set("Accept", "application/json")
 
 	response, getErr := jokeClient.Do(request)
 	if getErr != nil {
